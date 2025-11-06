@@ -1,5 +1,7 @@
 <template>
+  <SystemError v-if="systemError" />
   <NavShell
+    v-else
     :title="'Pipeline Platform'"
     :items="navItems"
     :auto-load-menu="false"
@@ -10,10 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { NavShell } from '@io-pipeline/shared-nav';
 import type { NavItem } from '@io-pipeline/shared-nav';
 import { useServiceRegistryStore } from './stores/serviceRegistry';
+import SystemError from './components/SystemError.vue';
+
+const systemError = ref(false);
 
 const serviceRegistry = useServiceRegistryStore();
 
@@ -85,5 +90,22 @@ const navItems = computed(() => {
   }
 
   return items;
+});
+
+// Check system status on mount
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/system-status');
+    const data = await response.json();
+
+    // Show error page if registration service is unavailable
+    if (data.registration?.status === 'unavailable') {
+      systemError.value = true;
+    }
+  } catch (error) {
+    console.error('Failed to check system status:', error);
+    // If we can't even check status, show error page
+    systemError.value = true;
+  }
 });
 </script>

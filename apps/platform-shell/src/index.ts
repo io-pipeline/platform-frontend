@@ -29,6 +29,37 @@ app.get('/proxy/health', (req, res) => {
     });
 });
 
+// System status endpoint - reports overall backend health
+app.get('/api/system-status', async (req, res) => {
+    const REGISTRATION_HOST = process.env.PLATFORM_REGISTRATION_HOST || 'localhost';
+    const REGISTRATION_PORT = process.env.PLATFORM_REGISTRATION_PORT || '38101';
+    const REGISTRATION_URL = `http://${REGISTRATION_HOST}:${REGISTRATION_PORT}`;
+
+    const status = {
+        proxy: { status: 'healthy', message: 'Platform shell proxy is running' },
+        registration: { status: 'unknown', message: 'Checking platform-registration-service...', url: REGISTRATION_URL },
+        timestamp: new Date().toISOString()
+    };
+
+    // Test platform-registration connectivity
+    try {
+        const transport = createGrpcTransport({
+            baseUrl: REGISTRATION_URL,
+            idleConnectionTimeoutMs: 2000
+        });
+        const client = createClient(Health, transport);
+        await client.check({});
+        status.registration.status = 'healthy';
+        status.registration.message = 'Platform registration service is reachable';
+    } catch (error: any) {
+        status.registration.status = 'unavailable';
+        status.registration.message = `Cannot connect to platform-registration-service: ${error.message || 'Connection refused'}`;
+    }
+
+    const overallHealthy = status.proxy.status === 'healthy' && status.registration.status === 'healthy';
+    res.status(overallHealthy ? 200 : 503).json(status);
+});
+
 // Temporary JSON endpoint for shared navigation items
 // When SystemNavService is implemented, replace this with the RPC
 app.get('/connect/system-nav/menu-items.json', async (req, res) => {

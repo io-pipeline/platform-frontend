@@ -73,17 +73,36 @@ jobs:
           # Clean up any existing test container
           docker rm -f test-shell 2>/dev/null || true
 
+          echo "Starting container (note: backend services may not be available in test environment)"
           docker run -d --name test-shell -p 38106:38106 git.rokkon.com/io-pipeline/platform-shell:latest
-          echo "Waiting for container to be ready..."
+
+          echo "Waiting for frontend to be ready..."
           for i in {1..30}; do
             if curl -f http://localhost:38106/ >/dev/null 2>&1; then
-              echo "Container is ready!"
+              echo "Frontend is serving HTML!"
               break
             fi
-            echo "Attempt $i/30: Container not ready yet..."
+            echo "Attempt $i/30: Frontend not ready yet..."
             sleep 1
           done
-          curl -f http://localhost:38106/ || (docker logs test-shell && exit 1)
+
+          # Verify frontend HTML is served
+          echo "Testing frontend HTML response..."
+          curl -f http://localhost:38106/ || (echo "Frontend HTML test failed"; docker logs test-shell; exit 1)
+
+          # Check system status endpoint (may return 503 if backend services unavailable, which is OK)
+          echo "Testing system status endpoint..."
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:38106/api/system-status)
+          if [ "$STATUS_CODE" = "200" ] || [ "$STATUS_CODE" = "503" ]; then
+            echo "System status endpoint responding correctly (status: $STATUS_CODE)"
+            curl -s http://localhost:38106/api/system-status | head -20
+          else
+            echo "System status endpoint test failed with status: $STATUS_CODE"
+            docker logs test-shell
+            exit 1
+          fi
+
+          echo "Container tests passed! Frontend serves correctly even when backend services unavailable."
 
           # Clean up
           docker stop test-shell
