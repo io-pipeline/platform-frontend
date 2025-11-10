@@ -71,8 +71,8 @@ jobs:
       - name: Build and tag Docker image
         run: |
           docker build -f apps/platform-shell/Dockerfile \
-                       -t ghcr.io/io-pipeline/platform-shell:${{ steps.version.outputs.tag }} \
-                       -t ghcr.io/io-pipeline/platform-shell:latest \
+                       -t ghcr.io/ai-pipestream/platform-shell:${{ steps.version.outputs.tag }} \
+                       -t ghcr.io/ai-pipestream/platform-shell:latest \
                        .
 
       - name: Test Docker image
@@ -81,7 +81,7 @@ jobs:
           docker rm -f test-shell 2>/dev/null || true
 
           echo "Starting container (note: backend services may not be available in test environment)"
-          docker run -d --name test-shell -p 38106:38106 ghcr.io/io-pipeline/platform-shell:latest
+          docker run -d --name test-shell -p 38106:38106 ghcr.io/ai-pipestream/platform-shell:latest
 
           echo "Waiting for frontend to be ready..."
           for i in {1..30}; do
@@ -117,5 +117,5 @@ jobs:
 
       - name: Push to GitHub Container Registry
         run: |
-          docker push ghcr.io/io-pipeline/platform-shell:${{ steps.version.outputs.tag }}
-          docker push ghcr.io/io-pipeline/platform-shell:latest
+          docker push ghcr.io/ai-pipestream/platform-shell:${{ steps.version.outputs.tag }}
+          docker push ghcr.io/ai-pipestream/platform-shell:latest
