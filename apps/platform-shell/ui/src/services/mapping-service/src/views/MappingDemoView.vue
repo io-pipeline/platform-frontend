@@ -68,6 +68,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { createClient } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { create } from '@bufbuild/protobuf'
 import { 
   MappingService, 
