@@ -178,8 +178,8 @@
 import { ref, onMounted, computed } from 'vue'
 import VuetifyConfigCard from './components/VuetifyConfigCard.vue'
 import { createClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { PipeStepProcessor } from "@io-pipeline/grpc-stubs/module";
+import { createConnectTransport } from '@connectrpc/connect-web';
+import { PipeStepProcessor } from "@ai-pipestream/grpc-stubs/dist/module/module_service_pb";
 
 const activeTab = ref('config')
 const schema = ref(null)
@@ -192,7 +192,8 @@ const loading = ref(true)
 
 // Use current origin - works in all environments
 const transport = createConnectTransport({
-  baseUrl: window.location.origin
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
 });
 
 const client = createClient(PipeStepProcessor, transport);

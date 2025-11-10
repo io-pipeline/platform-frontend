@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-web';
-import { PlatformRegistration } from '@io-pipeline/grpc-stubs/registration';
+import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb';
 
 const availableServices = ref<Set<string>>(new Set());
 const availableModules = ref<Set<string>>(new Set());
@@ -26,6 +26,7 @@ const initializeStreams = () => {
     try {
       const transport = createConnectTransport({
         baseUrl: window.location.origin,
+        useBinaryFormat: true
       });
 
       const client = createClient(PlatformRegistration, transport);
@@ -55,6 +56,7 @@ const initializeStreams = () => {
     try {
       const transport = createConnectTransport({
         baseUrl: window.location.origin,
+        useBinaryFormat: true
       });
 
       const client = createClient(PlatformRegistration, transport);

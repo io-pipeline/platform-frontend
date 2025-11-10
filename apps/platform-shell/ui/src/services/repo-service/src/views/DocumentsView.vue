@@ -162,8 +162,8 @@ import DocumentUpload from '../components/DocumentUpload.vue'
 import DocumentPreview from '../components/DocumentPreview.vue'
 import { listPipeDocs, deletePipeDoc } from '../services/repositoryClient'
 import { createClient } from '@connectrpc/connect'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
-import { NodeUploadService } from '@io-pipeline/grpc-stubs/upload'
+import { createConnectTransport } from '@connectrpc/connect-web'
+import { NodeUploadService } from '@ai-pipestream/grpc-stubs/dist/repository/filesystem/upload/upload_service_pb'
 
 const props = defineProps<{
   initialSearch?: string
@@ -268,7 +268,10 @@ const onDocumentUploaded = async (_doc: any) => {
 // Simple chunk upload demo: sends a small text as two chunks
 const openChunkUpload = async () => {
   try {
-    const transport = createBinaryTransport()
+    const transport = createConnectTransport({
+      baseUrl: window.location.origin,
+      useBinaryFormat: true
+    })
     const client = createClient(NodeUploadService as any, transport) as any
     const init: any = await client.initiateUpload({
       drive: 'modules-drive',

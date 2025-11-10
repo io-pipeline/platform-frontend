@@ -22,7 +22,10 @@ async function main() {
     process.exit(1)
   }
 
-  const transport = createConnectTransport({ baseUrl: 'http://localhost:38106' })
+  const transport = createConnectTransport({
+    baseUrl: 'http://localhost:38106',
+    useBinaryFormat: true
+  })
   const client = createClient(NodeUploadService, transport)
 
   const name = path.basename(absPath)

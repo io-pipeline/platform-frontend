@@ -27,28 +27,17 @@
       </v-chip>
       
       <!-- Reconnect Attempts -->
-      <v-chip 
-        v-if="reconnectAttempts > 0" 
-        color="info" 
-        variant="outlined" 
-        size="small" 
-        class="mr-2"
-      >
-        Attempts: {{ reconnectAttempts }}
-      </v-chip>
-      
-      <v-spacer />
-      
-      <!-- Manual Refresh Button -->
-      <v-btn
-        @click="handleRefresh"
-        :loading="refreshing"
+      <v-chip
+        v-if="reconnectAttempts > 0"
+        color="info"
         variant="outlined"
         size="small"
+        class="mr-2"
       >
-        <v-icon start>mdi-refresh</v-icon>
-        Refresh
-      </v-btn>
+        Reconnecting... (attempt {{ reconnectAttempts }})
+      </v-chip>
+
+      <v-spacer />
     </div>
 
     <!-- Error Alert -->
@@ -67,22 +56,27 @@
       <v-col v-for="u in updateList" :key="u.serviceName" cols="12" md="6" lg="4">
         <v-card variant="tonal" class="mb-4" :color="getCardColor(u)">
           <v-card-title class="d-flex align-center">
-            <v-icon :icon="iconFor(u.serviceName)" class="mr-2" /> 
-            {{ u.displayName || u.serviceName }}
-            <v-spacer />
-            <v-chip 
-              :color="getStatusColor(u.status)" 
-              variant="flat" 
+            <v-icon :icon="iconFor(u.serviceName)" class="mr-2" />
+            <span class="text-truncate flex-grow-1">{{ u.displayName || u.serviceName }}</span>
+            <v-chip
+              :color="getStatusColor(u.status)"
+              variant="flat"
               size="small"
+              class="ml-2"
             >
               {{ getStatusText(u.status) }}
             </v-chip>
           </v-card-title>
           <v-divider />
           <v-card-text>
-            <div class="text-body-2 mb-2">
-              <v-icon size="small" class="mr-1">mdi-target</v-icon>
-              Target: {{ u.target }}
+            <div class="mb-2">
+              <div class="text-caption text-medium-emphasis mb-1">
+                <v-icon size="small" class="mr-1">mdi-target</v-icon>
+                Target
+              </div>
+              <div class="text-body-2 font-monospace text-truncate" :title="u.target">
+                {{ u.target }}
+              </div>
             </div>
             <div class="text-caption text-medium-emphasis">
               <v-icon size="x-small" class="mr-1">mdi-clock-outline</v-icon>
@@ -96,13 +90,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useShellHealth } from '../composables/useShellHealth'
-import { HealthCheckResponse_ServingStatus as ServingStatus } from '@io-pipeline/grpc-stubs/health'
-import type { ServiceHealthUpdate } from '@io-pipeline/grpc-stubs/shell'
+import { HealthCheckResponse_ServingStatus as ServingStatus } from '@ai-pipestream/grpc-stubs/dist/grpc/health/v1/health_pb'
+import type { ServiceHealthUpdate } from '@ai-pipestream/grpc-stubs/dist/frontend/shell_service_pb'
 
-const { updates, error, isConnected, isUsingFallback, reconnectAttempts, refresh } = useShellHealth()
-const refreshing = ref(false)
+const { updates, error, isConnected, isUsingFallback, reconnectAttempts } = useShellHealth()
 
 const updateList = computed(() => Array.from(updates.value.values()))
 
@@ -123,15 +116,6 @@ const statusText = computed(() => {
   if (isUsingFallback.value) return 'Snapshot'
   return 'Disconnected'
 })
-
-const handleRefresh = async () => {
-  refreshing.value = true
-  try {
-    await refresh()
-  } finally {
-    refreshing.value = false
-  }
-}
 
 function iconFor(name: string): string {
   if (name.includes('registration')) return 'mdi-account-cog'

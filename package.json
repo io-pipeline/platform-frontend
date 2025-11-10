@@ -1,5 +1,5 @@
 {
-  "name": "@io-pipeline/platform-frontend",
+  "name": "@ai-pipestream/platform-frontend",
   "version": "1.0.0",
   "private": true,
   "description": "Frontend monorepo for IO Pipeline platform applications",
@@ -9,11 +9,29 @@
     "test": "pnpm -r test",
     "clean": "pnpm -r clean && rm -rf node_modules"
   },
-  "keywords": ["monorepo", "frontend", "io-pipeline"],
+  "keywords": [
+    "monorepo",
+    "frontend",
+    "ai-pipestream"
+  ],
   "author": "IO Pipeline",
   "license": "MIT",
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
+  },
+  "dependencies": {
+    "@ai-pipestream/grpc-stubs": "catalog:",
+    "@bufbuild/protobuf": "^2.10.0",
+    "@connectrpc/connect": "^2.1.0",
+    "@connectrpc/connect-web": "^2.1.0",
+    "@connectrpc/connect-node": "^2.1.0",
+    "@connectrpc/connect-express": "^2.1.0",
+    "vue": "^3.5.18",
+    "vuetify": "^3.9.3",
+    "@jsonforms/core": "^3.7.0-alpha.2",
+    "@jsonforms/vue": "^3.7.0-alpha.2",
+    "@jsonforms/vue-vuetify": "^3.7.0-alpha.2",
+    "@jsonforms/vue-vanilla": "^3.7.0-alpha.2"
   }
 }

@@ -1,7 +1,21 @@
-# pnpm workspace configuration for platform-frontend monorepo
 packages:
-  # Frontend applications (Docker containers)
-  - 'apps/*'
-  - 'apps/*/ui'
-  # Shared packages (internal only, not published)
-  - 'packages/*'
+  - apps/*
+  - apps/*/ui
+  - packages/*
+
+catalog:
+  '@ai-pipestream/grpc-stubs': 0.1.6-alpha.20251110163341
+  '@bufbuild/protobuf': ^2.10.0
+  '@connectrpc/connect': ^2.1.0
+  '@connectrpc/connect-express': ^2.1.0
+  '@connectrpc/connect-node': ^2.1.0
+  '@connectrpc/connect-web': ^2.1.0
+  '@jsonforms/core': ^3.7.0-alpha.2
+  '@jsonforms/vue': ^3.7.0-alpha.2
+  '@jsonforms/vue-vanilla': ^3.7.0-alpha.2
+  '@jsonforms/vue-vuetify': ^3.7.0-alpha.2
+  vue: ^3.5.18
+  vuetify: ^3.9.3
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'

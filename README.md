@@ -1,6 +1,6 @@
 # Platform Frontend
 
-[![Build Status](https://github.com/io-pipeline/platform-frontend/workflows/Build%20and%20Publish%20Platform%20Frontend/badge.svg)](https://github.com/io-pipeline/platform-frontend/actions)
+[![Build Status](https://github.com/ai-pipestream/platform-frontend/workflows/Build%20and%20Publish%20Platform%20Frontend/badge.svg)](https://github.com/ai-pipestream/platform-frontend/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Frontend monorepo for the IO Pipeline platform, containing the unified Platform Shell application and reusable UI component libraries.
@@ -31,16 +31,16 @@ platform-frontend/
 
 ## Packages
 
-This monorepo contains the following packages under the `@io-pipeline` scope:
+This monorepo contains the following packages under the `@ai-pipestream` scope:
 
 | Package | Version | Description | Registry |
 |---------|---------|-------------|----------|
-| @io-pipeline/shared-components | 1.0.7 | Vue 3 + Vuetify 3 UI components with ComponentGallery | Private |
-| @io-pipeline/shared-nav | 1.0.0 | Navigation shell (AppShell, Drawer, AppBar) | Private |
-| @io-pipeline/connector-shared | 1.0.0 | Backend utilities for connectors and streaming | Private |
-| @io-pipeline/protobuf-forms | 1.0.0 | Type-safe form generation from protobuf messages | Private |
+| @ai-pipestream/shared-components | 1.0.7 | Vue 3 + Vuetify 3 UI components with ComponentGallery | Public |
+| @ai-pipestream/shared-nav | 1.0.0 | Navigation shell (AppShell, Drawer, AppBar) | Public |
+| @ai-pipestream/connector-shared | 1.0.0 | Backend utilities for connectors and streaming | Public |
+| @ai-pipestream/protobuf-forms | 1.0.0 | Type-safe form generation from protobuf messages | Public |
 
-**Note**: Packages are published to a private npm registry. The monorepo depends on [@io-pipeline/grpc-stubs](https://www.npmjs.com/package/@io-pipeline/grpc-stubs) which is published to public npm.
+**Note**: All packages are published to the public npm registry at npmjs.org, including [@ai-pipestream/grpc-stubs](https://www.npmjs.com/package/@ai-pipestream/grpc-stubs).
 
 ## Prerequisites
 
@@ -106,10 +106,10 @@ Access at: http://localhost:38106
 
 ### Pre-built Images
 
-Images are automatically published to Gitea Container Registry on every push to `main`:
+Images are automatically published to GitHub Container Registry on every push to `main`:
 
 ```bash
-docker pull git.rokkon.com/io-pipeline/platform-shell:latest
+docker pull ghcr.io/ai-pipestream/platform-shell:latest
 ```
 
 ## Development Scripts
@@ -166,30 +166,52 @@ The platform gracefully handles service unavailability:
 pnpm -r build
 
 # Build specific package
-pnpm --filter @io-pipeline/shared-components build
+pnpm --filter @ai-pipestream/shared-components build
 
 # Watch mode for development
-pnpm --filter @io-pipeline/shared-components dev
+pnpm --filter @ai-pipestream/shared-components dev
 ```
 
 ### Publishing
 
-Packages are published to the private Gitea npm registry. Ensure you have authentication configured in `.npmrc`:
+Packages are published to the public npm registry at npmjs.org:
 
 ```bash
-# Configure authentication (one-time setup)
-echo "//git.rokkon.com/api/packages/io-pipeline/npm/:_authToken=YOUR_TOKEN" >> ~/.npmrc
-
-# Publish a package
+# Publish a package (requires npm authentication)
 cd packages/shared-components
 pnpm publish
 ```
 
 Packages are automatically published via CI/CD when changes are pushed to `main`.
 
-## Environment Variables
+## Configuration
 
-### Platform Shell
+### Environment Variables
+
+The platform uses environment variables for configuration. Copy `.env.example` to `.env` and customize as needed.
+
+#### Development Server (Vite)
+
+These variables configure the Vite dev server proxy in development mode:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_BACKEND_URL` | `http://localhost:38106` | Backend/web-proxy URL for Vite dev server proxy |
+| `VITE_DEV_SERVER_PORT` | `33000` | Vite development server port |
+
+#### Runtime Configuration (Browser)
+
+These variables are embedded in the built application and used at runtime in the browser:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_PLATFORM_REGISTRATION_URL` | `window.location.origin` | Platform Registration service URL. In production, set to Consul sidecar (e.g., `http://localhost:8500`) |
+| `VITE_GRPC_USE_BINARY` | `true` | Use binary protobuf format instead of JSON (recommended for performance) |
+| `VITE_GRPC_DEBUG` | `true` in dev, `false` in prod | Enable debug logging for gRPC connections |
+
+#### Backend Server
+
+These variables configure the Express backend server:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -197,6 +219,91 @@ Packages are automatically published via CI/CD when changes are pushed to `main`
 | `NODE_ENV` | `development` | Environment mode |
 | `PLATFORM_REGISTRATION_HOST` | `localhost` | Registration service host |
 | `PLATFORM_REGISTRATION_PORT` | `38101` | Registration service port |
+
+### Development Mode Configuration
+
+For local development, create a `.env` file in `apps/platform-shell/ui/`:
+
+```bash
+# Development - Vite proxies to local backend
+VITE_BACKEND_URL=http://localhost:38106
+VITE_DEV_SERVER_PORT=33000
+VITE_GRPC_USE_BINARY=true
+VITE_GRPC_DEBUG=true
+```
+
+Then start the platform:
+
+```bash
+./scripts/start-platform-shell.sh
+```
+
+**Architecture in Development:**
+```
+Browser → Vite Dev Server (:33000) → Backend/Web-Proxy (:38106) → Services
+```
+
+### Production Mode Configuration
+
+#### Option 1: Standard Production (no Consul sidecar)
+
+Services are accessed through Traefik/ALB at the same origin:
+
+```bash
+# No special configuration needed - uses window.location.origin
+# Just build and deploy
+pnpm build
+NODE_ENV=production pnpm start
+```
+
+#### Option 2: Production with Consul Sidecar
+
+When using Consul for service discovery with DNS override:
+
+```bash
+# Set the Platform Registration URL to point to Consul sidecar
+VITE_PLATFORM_REGISTRATION_URL=http://localhost:8500
+
+# Build with this configuration
+pnpm build
+
+# Deploy
+NODE_ENV=production pnpm start
+```
+
+**Architecture in Production:**
+```
+Browser → Traefik/ALB → Services
+             └─> Platform Registration via Consul Sidecar (DNS override)
+```
+
+### Docker Configuration
+
+When deploying via Docker, set environment variables in your deployment:
+
+```bash
+docker run -d \
+  --name platform-shell \
+  -p 38106:38106 \
+  -e PLATFORM_REGISTRATION_HOST=platform-registration-service \
+  -e PLATFORM_REGISTRATION_PORT=38101 \
+  platform-shell
+```
+
+For Consul integration:
+
+```bash
+docker run -d \
+  --name platform-shell \
+  -p 38106:38106 \
+  -e PLATFORM_REGISTRATION_HOST=consul-sidecar \
+  -e PLATFORM_REGISTRATION_PORT=8500 \
+  platform-shell
+```
+
+### Configuration File
+
+See `apps/platform-shell/ui/.env.example` for a complete example with all available options and documentation.
 
 ## API Endpoints
 
@@ -252,8 +359,8 @@ Reusable UI components including:
 - Layout components: Cards, dialogs, etc.
 
 ```typescript
-import { ComponentGallery } from '@io-pipeline/shared-components';
-import '@io-pipeline/shared-components/dist/style.css';
+import { ComponentGallery } from '@ai-pipestream/shared-components';
+import '@ai-pipestream/shared-components/dist/style.css';
 ```
 
 #### shared-nav
@@ -264,7 +371,7 @@ Navigation shell components:
 - Drawer: Side navigation drawer
 
 ```typescript
-import { NavShell } from '@io-pipeline/shared-nav';
+import { NavShell } from '@ai-pipestream/shared-nav';
 ```
 
 #### connector-shared
@@ -275,7 +382,7 @@ Backend utilities for connector functionality:
 - Document processing utilities
 
 ```typescript
-import { createUploadClient } from '@io-pipeline/connector-shared';
+import { createUploadClient } from '@ai-pipestream/connector-shared';
 ```
 
 #### protobuf-forms
@@ -283,7 +390,7 @@ import { createUploadClient } from '@io-pipeline/connector-shared';
 Type-safe form generation from Protocol Buffer messages:
 
 ```typescript
-import { createFormSchema } from '@io-pipeline/protobuf-forms';
+import { createFormSchema } from '@ai-pipestream/protobuf-forms';
 import { MyMessage } from './generated/my_pb';
 
 const schema = createFormSchema(MyMessage);
@@ -379,15 +486,14 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## Links
 
-- **GitHub Repository**: https://github.com/io-pipeline/platform-frontend
-- **Gitea Repository**: https://git.rokkon.com/io-pipeline/platform-frontend
-- **Issue Tracker**: https://github.com/io-pipeline/platform-frontend/issues
+- **GitHub Repository**: https://github.com/ai-pipestream/platform-frontend
+- **Issue Tracker**: https://github.com/ai-pipestream/platform-frontend/issues
 - **Documentation**: [Platform Shell README](apps/platform-shell/README.md)
-- **Public Dependency**: [@io-pipeline/grpc-stubs on npm](https://www.npmjs.com/package/@io-pipeline/grpc-stubs)
+- **Public Dependency**: [@ai-pipestream/grpc-stubs on npm](https://www.npmjs.com/package/@ai-pipestream/grpc-stubs)
 
 ## Support
 
 For questions or issues:
-1. Check existing [GitHub Issues](https://github.com/io-pipeline/platform-frontend/issues)
+1. Check existing [GitHub Issues](https://github.com/ai-pipestream/platform-frontend/issues)
 2. Create a new issue with details about your environment and problem
 3. Tag issues appropriately (bug, enhancement, question, etc.)
