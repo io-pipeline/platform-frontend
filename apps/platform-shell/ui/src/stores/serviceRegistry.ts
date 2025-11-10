@@ -19,6 +19,7 @@ export const useServiceRegistryStore = defineStore('serviceRegistry', () => {
     try {
       const transport = createConnectTransport({
         baseUrl: window.location.origin,
+        useBinaryFormat: true
       })
 
       const client = createClient(PlatformRegistration, transport)
@@ -42,6 +43,7 @@ export const useServiceRegistryStore = defineStore('serviceRegistry', () => {
     try {
       const transport = createConnectTransport({
         baseUrl: window.location.origin,
+        useBinaryFormat: true
       })
 
       const client = createClient(PlatformRegistration, transport)

@@ -176,7 +176,10 @@ const documentStore = useDocumentStore()
 const { documents: searchResults, loading: searching, error } = storeToRefs(documentStore)
 
 // gRPC Client
-const transport = createConnectTransport()
+const transport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
+})
 const repoClient = createClient(FilesystemService, transport)
 
 // Local State

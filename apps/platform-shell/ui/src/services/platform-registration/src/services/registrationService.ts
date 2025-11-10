@@ -5,11 +5,15 @@
  */
 
 import { createClient } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb'
 import type { ServiceDetails, ServiceListResponse } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb'
 
 // Create the transport - uses same origin to reach /connect/* through Traefik
-export const transport = createConnectTransport()
+export const transport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
+})
 
 // Create the client
 export const registrationClient = createClient(PlatformRegistration, transport)

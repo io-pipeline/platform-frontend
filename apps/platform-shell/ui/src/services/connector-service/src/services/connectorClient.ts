@@ -1,4 +1,5 @@
 import { createClient } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { create } from '@bufbuild/protobuf'
 import {
   ConnectorAdminService,
@@ -13,9 +14,9 @@ import {
 } from '@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb'
 
 // Type imports for TypeScript type checking only
-import type { 
-  ConnectorRegistration, 
-  RegisterConnectorRequest, 
+import type {
+  ConnectorRegistration,
+  RegisterConnectorRequest,
   UpdateConnectorRequest,
   GetConnectorRequest,
   ListConnectorsRequest,
@@ -26,7 +27,10 @@ import type {
 
 // Create transport to connect through web-proxy using binary format
 // The web-proxy will route to connector-service based on the service definitions
-const transport = createConnectTransport()
+const transport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
+})
 
 // Create service client
 export const connectorClient = createClient(ConnectorAdminService, transport)

@@ -192,7 +192,8 @@ const loading = ref(true)
 
 // Use current origin - works in all environments
 const transport = createConnectTransport({
-  baseUrl: window.location.origin
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
 });
 
 const client = createClient(PipeStepProcessor, transport);

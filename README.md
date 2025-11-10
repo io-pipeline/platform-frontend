@@ -184,9 +184,34 @@ pnpm publish
 
 Packages are automatically published via CI/CD when changes are pushed to `main`.
 
-## Environment Variables
+## Configuration
 
-### Platform Shell
+### Environment Variables
+
+The platform uses environment variables for configuration. Copy `.env.example` to `.env` and customize as needed.
+
+#### Development Server (Vite)
+
+These variables configure the Vite dev server proxy in development mode:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_BACKEND_URL` | `http://localhost:38106` | Backend/web-proxy URL for Vite dev server proxy |
+| `VITE_DEV_SERVER_PORT` | `33000` | Vite development server port |
+
+#### Runtime Configuration (Browser)
+
+These variables are embedded in the built application and used at runtime in the browser:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_PLATFORM_REGISTRATION_URL` | `window.location.origin` | Platform Registration service URL. In production, set to Consul sidecar (e.g., `http://localhost:8500`) |
+| `VITE_GRPC_USE_BINARY` | `true` | Use binary protobuf format instead of JSON (recommended for performance) |
+| `VITE_GRPC_DEBUG` | `true` in dev, `false` in prod | Enable debug logging for gRPC connections |
+
+#### Backend Server
+
+These variables configure the Express backend server:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -194,6 +219,91 @@ Packages are automatically published via CI/CD when changes are pushed to `main`
 | `NODE_ENV` | `development` | Environment mode |
 | `PLATFORM_REGISTRATION_HOST` | `localhost` | Registration service host |
 | `PLATFORM_REGISTRATION_PORT` | `38101` | Registration service port |
+
+### Development Mode Configuration
+
+For local development, create a `.env` file in `apps/platform-shell/ui/`:
+
+```bash
+# Development - Vite proxies to local backend
+VITE_BACKEND_URL=http://localhost:38106
+VITE_DEV_SERVER_PORT=33000
+VITE_GRPC_USE_BINARY=true
+VITE_GRPC_DEBUG=true
+```
+
+Then start the platform:
+
+```bash
+./scripts/start-platform-shell.sh
+```
+
+**Architecture in Development:**
+```
+Browser → Vite Dev Server (:33000) → Backend/Web-Proxy (:38106) → Services
+```
+
+### Production Mode Configuration
+
+#### Option 1: Standard Production (no Consul sidecar)
+
+Services are accessed through Traefik/ALB at the same origin:
+
+```bash
+# No special configuration needed - uses window.location.origin
+# Just build and deploy
+pnpm build
+NODE_ENV=production pnpm start
+```
+
+#### Option 2: Production with Consul Sidecar
+
+When using Consul for service discovery with DNS override:
+
+```bash
+# Set the Platform Registration URL to point to Consul sidecar
+VITE_PLATFORM_REGISTRATION_URL=http://localhost:8500
+
+# Build with this configuration
+pnpm build
+
+# Deploy
+NODE_ENV=production pnpm start
+```
+
+**Architecture in Production:**
+```
+Browser → Traefik/ALB → Services
+             └─> Platform Registration via Consul Sidecar (DNS override)
+```
+
+### Docker Configuration
+
+When deploying via Docker, set environment variables in your deployment:
+
+```bash
+docker run -d \
+  --name platform-shell \
+  -p 38106:38106 \
+  -e PLATFORM_REGISTRATION_HOST=platform-registration-service \
+  -e PLATFORM_REGISTRATION_PORT=38101 \
+  platform-shell
+```
+
+For Consul integration:
+
+```bash
+docker run -d \
+  --name platform-shell \
+  -p 38106:38106 \
+  -e PLATFORM_REGISTRATION_HOST=consul-sidecar \
+  -e PLATFORM_REGISTRATION_PORT=8500 \
+  platform-shell
+```
+
+### Configuration File
+
+See `apps/platform-shell/ui/.env.example` for a complete example with all available options and documentation.
 
 ## API Endpoints
 

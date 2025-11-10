@@ -26,6 +26,7 @@ const initializeStreams = () => {
     try {
       const transport = createConnectTransport({
         baseUrl: window.location.origin,
+        useBinaryFormat: true
       });
 
       const client = createClient(PlatformRegistration, transport);
@@ -55,6 +56,7 @@ const initializeStreams = () => {
     try {
       const transport = createConnectTransport({
         baseUrl: window.location.origin,
+        useBinaryFormat: true
       });
 
       const client = createClient(PlatformRegistration, transport);

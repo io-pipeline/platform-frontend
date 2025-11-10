@@ -267,7 +267,10 @@ const onDocumentUploaded = async (_doc: any) => {
 // Simple chunk upload demo: sends a small text as two chunks
 const openChunkUpload = async () => {
   try {
-    const transport = createConnectTransport()
+    const transport = createConnectTransport({
+      baseUrl: window.location.origin,
+      useBinaryFormat: true
+    })
     const client = createClient(NodeUploadService as any, transport) as any
     const init: any = await client.initiateUpload({
       drive: 'modules-drive',

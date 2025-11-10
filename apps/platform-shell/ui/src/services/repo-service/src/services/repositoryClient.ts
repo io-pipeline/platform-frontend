@@ -1,4 +1,5 @@
 import { createClient } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { create } from '@bufbuild/protobuf'
 import { PipeDocSchema, TagsSchema, BlobSchema, BlobBagSchema, SearchMetadataSchema } from '@ai-pipestream/grpc-stubs/dist/core/pipeline_core_types_pb'
 import {
@@ -12,7 +13,10 @@ import type { PipeDoc, Tags, Blob, BlobBag, SearchMetadata } from '@ai-pipestrea
 
 // Create transport to connect through web-proxy using binary format
 // The web-proxy will route to repository-service based on the service definitions
-const transport = createConnectTransport()
+const transport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
+})
 
 // Create service clients
 export const pipeDocClient = createClient(PipeDocService, transport)

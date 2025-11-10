@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb'
 import type { ServiceDetails, ServiceListResponse } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb'
 
@@ -60,7 +61,10 @@ export class ServiceDiscoveryClient {
     }
 
     // Create transport that routes to platform-registration service through Vite proxy
-    const transport = createConnectTransport(this.options.platformRegistrationBaseUrl)
+    const transport = createConnectTransport({
+      baseUrl: this.options.platformRegistrationBaseUrl,
+      useBinaryFormat: true
+    })
 
     // Create the platform registration client
     this.platformRegistrationClient = createClient(PlatformRegistration, transport)

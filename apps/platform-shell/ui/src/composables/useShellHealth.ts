@@ -1,5 +1,6 @@
 import { ref, onUnmounted, readonly } from 'vue'
 import { createClient, ConnectError, Code } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { create } from '@bufbuild/protobuf'
 import { ShellService, type ServiceHealthUpdate, ServiceHealthUpdateSchema } from '@ai-pipestream/grpc-stubs/dist/frontend/shell_service_pb'
 import { HealthCheckResponse_ServingStatus as ServingStatus } from '@ai-pipestream/grpc-stubs/dist/grpc/health/v1/health_pb'
@@ -33,7 +34,10 @@ export function useShellHealth() {
   let reconnectTimeout: ReturnType<typeof setTimeout> | null = null
   let isUnmounted = false
 
-  const transport = createConnectTransport()
+  const transport = createConnectTransport({
+    baseUrl: window.location.origin,
+    useBinaryFormat: true
+  })
   const client = createClient(ShellService, transport)
 
   const fetchFallbackSnapshot = async (): Promise<void> => {
@@ -129,12 +133,13 @@ export function useShellHealth() {
       
       console.log('[useShellHealth] Stream ended normally')
     } catch (e: any) {
-      console.error('[useShellHealth] Stream error:', e)
-      
-      // Don't treat cancellation as an error
+      // Don't treat cancellation as an error (happens during refresh or unmount)
       if (e instanceof ConnectError && e.code === Code.Canceled) {
+        console.log('[useShellHealth] Stream canceled (expected during refresh/unmount)')
         return
       }
+
+      console.error('[useShellHealth] Stream error:', e)
       
       error.value = `Stream error: ${e?.message ?? String(e)}`
       

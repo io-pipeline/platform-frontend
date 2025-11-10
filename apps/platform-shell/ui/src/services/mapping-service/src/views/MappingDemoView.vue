@@ -97,7 +97,10 @@ const sampleDocument = ref({
 })
 
 // Use the binary transport from proto-stubs - now using web-proxy
-const transport = createConnectTransport()
+const transport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true
+})
 const client = createClient(MappingService, transport)
 
 async function callMappingService() {
