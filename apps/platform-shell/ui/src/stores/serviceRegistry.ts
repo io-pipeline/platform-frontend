@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { createClient, ConnectError, Code } from '@connectrpc/connect'
 import { createConnectTransport } from '@connectrpc/connect-web'
-import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb.ts'
+import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb'
 
 console.log('[ServiceRegistry] Loaded PlatformRegistration service descriptor:', PlatformRegistration)
 console.log('[ServiceRegistry] Service methods:', PlatformRegistration.methods)

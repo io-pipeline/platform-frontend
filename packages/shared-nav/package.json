@@ -48,14 +48,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@ai-pipestream/grpc-stubs": "0.1.2",
-    "vue": "^3.5.18"
+    "@ai-pipestream/grpc-stubs": "catalog:",
+    "vue": "catalog:"
   },
   "peerDependencies": {
-    "vuetify": "^3.9.3"
+    "vuetify": "catalog:"
   },
   "devDependencies": {
-    "vuetify": "^3.9.3",
+    "vuetify": "catalog:",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "^5.9.2",

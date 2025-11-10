@@ -54,7 +54,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^2.7.0"
+    "@bufbuild/protobuf": "catalog:"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.56.0",
@@ -65,10 +65,10 @@
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
-    "@jsonforms/core": "^3.7.0-alpha.2",
-    "@jsonforms/vue": "^3.7.0-alpha.2",
-    "@jsonforms/vue-vuetify": "^3.7.0-alpha.2",
-    "vue": "^3.4.0"
+    "@jsonforms/core": "catalog:",
+    "@jsonforms/vue": "catalog:",
+    "@jsonforms/vue-vuetify": "catalog:",
+    "vue": "catalog:"
   },
   "engines": {
     "node": ">=22.0.0 <23",
