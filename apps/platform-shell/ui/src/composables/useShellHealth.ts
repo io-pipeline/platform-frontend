@@ -1,9 +1,9 @@
 import { ref, onUnmounted, readonly } from 'vue'
 import { createClient, ConnectError, Code } from '@connectrpc/connect'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs'
 import { create } from '@bufbuild/protobuf'
-import { ShellService, type ServiceHealthUpdate, ServiceHealthUpdateSchema } from '@io-pipeline/grpc-stubs/shell'
-import { HealthCheckResponse_ServingStatus as ServingStatus } from '@io-pipeline/grpc-stubs/health'
+import { ShellService, type ServiceHealthUpdate, ServiceHealthUpdateSchema } from '@ai-pipestream/grpc-stubs/shell'
+import { HealthCheckResponse_ServingStatus as ServingStatus } from '@ai-pipestream/grpc-stubs/health'
 
 console.log('[DEBUG] useShellHealth imports:', {
   createBinaryTransport,

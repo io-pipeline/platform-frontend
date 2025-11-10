@@ -165,8 +165,8 @@ import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDocumentStore } from '../stores/documentStore'
 import { createClient } from '@connectrpc/connect'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
-import { FilesystemService } from '@io-pipeline/grpc-stubs/repository/filesystem'
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs'
+import { FilesystemService } from '@ai-pipestream/grpc-stubs/repository/filesystem'
 
 const props = defineProps<{
   initialQuery?: string

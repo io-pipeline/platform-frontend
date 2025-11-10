@@ -162,8 +162,8 @@ import DocumentUpload from '../components/DocumentUpload.vue'
 import DocumentPreview from '../components/DocumentPreview.vue'
 import { listPipeDocs, deletePipeDoc } from '../services/repositoryClient'
 import { createClient } from '@connectrpc/connect'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
-import { NodeUploadService } from '@io-pipeline/grpc-stubs/upload'
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs'
+import { NodeUploadService } from '@ai-pipestream/grpc-stubs/upload'
 
 const props = defineProps<{
   initialSearch?: string

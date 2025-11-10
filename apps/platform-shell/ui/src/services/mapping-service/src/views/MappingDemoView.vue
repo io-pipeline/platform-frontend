@@ -73,9 +73,9 @@ import {
   MappingService, 
   ApplyMappingRequestSchema, 
   ApplyMappingResponseSchema,
-} from '@io-pipeline/grpc-stubs/mapping'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
-import { PipeDocPreview } from '@io-pipeline/shared-components'
+} from '@ai-pipestream/grpc-stubs/mapping'
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs'
+import { PipeDocPreview } from '@ai-pipestream/shared-components'
 
 const loading = ref(false)
 const response = ref<any>(null)

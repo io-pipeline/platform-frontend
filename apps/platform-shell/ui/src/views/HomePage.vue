@@ -50,7 +50,7 @@
 import { computed } from 'vue';
 import { useServiceRegistryStore } from '../stores/serviceRegistry';
 import { useShellHealth } from '../composables/useShellHealth';
-import { HealthCheckResponse_ServingStatus as ServingStatus } from '@io-pipeline/grpc-stubs/health';
+import { HealthCheckResponse_ServingStatus as ServingStatus } from '@ai-pipestream/grpc-stubs/health';
 
 const serviceRegistry = useServiceRegistryStore();
 const { updates, isConnected, isUsingFallback } = useShellHealth();

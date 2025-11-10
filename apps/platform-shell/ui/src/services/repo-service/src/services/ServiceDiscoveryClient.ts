@@ -6,9 +6,9 @@
  */
 
 import { createClient } from '@connectrpc/connect'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
-import { PlatformRegistration } from '@io-pipeline/grpc-stubs/registration'
-import type { ServiceDetails, ServiceListResponse } from '@io-pipeline/grpc-stubs/registration'
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs'
+import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/registration'
+import type { ServiceDetails, ServiceListResponse } from '@ai-pipestream/grpc-stubs/registration'
 
 // Service interface types
 export interface DiscoveredService {

@@ -98,8 +98,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useShellHealth } from '../composables/useShellHealth'
-import { HealthCheckResponse_ServingStatus as ServingStatus } from '@io-pipeline/grpc-stubs/health'
-import type { ServiceHealthUpdate } from '@io-pipeline/grpc-stubs/shell'
+import { HealthCheckResponse_ServingStatus as ServingStatus } from '@ai-pipestream/grpc-stubs/health'
+import type { ServiceHealthUpdate } from '@ai-pipestream/grpc-stubs/shell'
 
 const { updates, error, isConnected, isUsingFallback, reconnectAttempts, refresh } = useShellHealth()
 const refreshing = ref(false)

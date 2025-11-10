@@ -1,7 +1,7 @@
 import { createClient } from '@connectrpc/connect';
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs';
-import { MappingService } from '@io-pipeline/grpc-stubs/mapping';
-import type { ApplyMappingRequest, ApplyMappingResponse } from '@io-pipeline/grpc-stubs/mapping';
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs';
+import { MappingService } from '@ai-pipestream/grpc-stubs/mapping';
+import type { ApplyMappingRequest, ApplyMappingResponse } from '@ai-pipestream/grpc-stubs/mapping';
 
 const transport = createBinaryTransport(`http://${window.location.hostname}:37200`);
 

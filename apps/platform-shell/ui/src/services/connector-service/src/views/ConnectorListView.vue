@@ -196,7 +196,7 @@ import {
   rotateApiKey as rotateApiKeyService,
   listConnectors as listConnectorsService 
 } from '../services/connectorClient'
-import type { ConnectorRegistration } from '@io-pipeline/grpc-stubs/connector'
+import type { ConnectorRegistration } from '@ai-pipestream/grpc-stubs/connector'
 
 const router = useRouter()
 

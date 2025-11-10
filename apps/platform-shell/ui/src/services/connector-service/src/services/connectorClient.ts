@@ -1,5 +1,5 @@
 import { createClient } from '@connectrpc/connect'
-import { createBinaryTransport } from '@io-pipeline/grpc-stubs'
+import { createBinaryTransport } from '@ai-pipestream/grpc-stubs'
 import { create } from '@bufbuild/protobuf'
 import {
   ConnectorAdminService,
@@ -11,7 +11,7 @@ import {
   SetConnectorStatusRequestSchema,
   DeleteConnectorRequestSchema,
   RotateApiKeyRequestSchema
-} from '@io-pipeline/grpc-stubs/connector'
+} from '@ai-pipestream/grpc-stubs/connector'
 
 // Type imports for TypeScript type checking only
 import type { 
@@ -23,7 +23,7 @@ import type {
   SetConnectorStatusRequest,
   DeleteConnectorRequest,
   RotateApiKeyRequest
-} from '@io-pipeline/grpc-stubs/connector'
+} from '@ai-pipestream/grpc-stubs/connector'
 
 // Create transport to connect through web-proxy using binary format
 // The web-proxy will route to connector-service based on the service definitions
